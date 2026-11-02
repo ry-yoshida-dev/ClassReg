@@ -6,8 +6,8 @@ ClassReg (`classreg`) is a Python package that wraps scikit-learn classifiers an
 
 | Task | Package | Methods |
 | --- | --- | --- |
-| Classification | `classreg.classification` | Logistic regression, SVC, k-nearest neighbors, decision tree, random forest, histogram gradient boosting, Gaussian naive Bayes |
-| Regression | `classreg.regression` | Linear regression, ridge, lasso, elastic net, SVR, k-nearest neighbors, decision tree, random forest, histogram gradient boosting |
+| Classification | `classreg.classification` | Logistic regression, ridge classifier, perceptron, SVC, nu SVC, linear SVC, k-nearest neighbors, radius neighbors, nearest centroid, decision tree, extra tree, random forest, extra trees, gradient boosting, histogram gradient boosting, AdaBoost, bagging, stacking, voting, Gaussian, Bernoulli, multinomial, complement, and categorical naive Bayes, linear and quadratic discriminant analysis, Gaussian process, multilayer perceptron, stochastic gradient descent |
+| Regression | `classreg.regression` | Linear regression, ridge, lasso, elastic net, least angle regression, lasso least angle regression with fixed or information criterion penalty, orthogonal matching pursuit, Bayesian ridge, automatic relevance determination, Huber, Theil-Sen, quantile, Poisson, Gamma, Tweedie, isotonic, partial least squares, SVR, nu SVR, linear SVR, kernel ridge, k-nearest neighbors, radius neighbors, decision tree, extra tree, random forest, extra trees, gradient boosting, histogram gradient boosting, AdaBoost, bagging, stacking, voting, Gaussian process, multilayer perceptron, stochastic gradient descent |
 
 Each task package exports everything needed for that task. Same-named classes such as `RandomForestParameters` are task-specific, so the top-level `classreg` package exports only the shared components.
 
@@ -106,6 +106,19 @@ by_subject = ClassificationEvaluator(
 forward = RegressionEvaluator(splitter=TimeSeriesSplitter(n_splits=5, gap=1))
 ```
 
+Reduce the variance of the estimate on small datasets by repeating the folds:
+
+```python
+from classreg.classification import (
+    ClassificationEvaluator,
+    RepeatedStratifiedKFoldSplitter,
+)
+
+repeated = ClassificationEvaluator(
+    splitter=RepeatedStratifiedKFoldSplitter(n_splits=5, n_repeats=10)
+)
+```
+
 ## Notes
 
 - Scaling is part of the estimator pipeline, and every fold builds a fresh processor, so test samples never influence preprocessing. Scale-sensitive methods default to `FeatureScaling.STANDARD`.
@@ -114,6 +127,8 @@ forward = RegressionEvaluator(splitter=TimeSeriesSplitter(n_splits=5, gap=1))
 - Macro-averaged ROC AUC and average precision are one-vs-rest, also for binary problems; for the score of the positive class, read `metrics.per_class`.
 - Evaluating on a label the classifier was not fitted on raises `ValueError`, as does a split that trains on a single class.
 - `MetricSummary.std` is `None` for a single holdout split: the variability is unknown, not zero.
+- Repeated splitters evaluate overlapping test partitions, so their `MetricSummary.std` is not that of independent runs, and `combine_confusion_matrices` counts a sample once per time it is tested.
+- With `LeaveOneOutSplitter`, each test fold has one sample, so metrics that need several samples or classes, such as `r2` and `roc_auc`, are undefined. Rank by `accuracy` or `rmse`. With balanced classes, the class prior baseline scores close to zero, because leaving a sample out makes another class the majority, so improvements over it are overstated.
 - Means are only compared on the same folds. When a metric is undefined in only some folds, summaries average the remaining folds and report their coverage, such as `(1/5 folds)`. `compare` refuses to rank by such a metric, `get_baseline_improvement` raises `ValueError` when the model and the baseline define it on different folds, and the comparison table omits such a baseline.
 - `compare` rejects a metric that a candidate's kind of scores can never define, such as `log_loss` for SVC, before any training.
 - Parameter and splitter objects reject NaN and non-integer values at construction, with `ValueError` and `TypeError` respectively.

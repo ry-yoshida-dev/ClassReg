@@ -22,6 +22,28 @@ class TestPackageLayout(unittest.TestCase):
             regression.RandomForestParameters,
         )
 
+    def test_same_named_new_methods_stay_task_specific(self) -> None:
+        self.assertIsNot(
+            classification.ExtraTreesParameters, regression.ExtraTreesParameters
+        )
+        self.assertIs(
+            classification.MultilayerPerceptronSolver,
+            regression.MultilayerPerceptronSolver,
+        )
+        self.assertIs(
+            classification.GaussianProcessKernel, regression.GaussianProcessKernel
+        )
+        self.assertIs(
+            classification.GaussianProcessKernel, classreg.GaussianProcessKernel
+        )
+
+    def test_shared_splitters_are_exported_at_the_top_level(self) -> None:
+        self.assertIs(regression.RepeatedKFoldSplitter, classreg.RepeatedKFoldSplitter)
+        self.assertIs(
+            regression.RepeatedHoldoutSplitter, classreg.RepeatedHoldoutSplitter
+        )
+        self.assertIs(classification.LeaveOneOutSplitter, classreg.LeaveOneOutSplitter)
+
     def test_evaluators_share_the_base_class(self) -> None:
         self.assertIsInstance(
             classification.ClassificationEvaluator(), classreg.SupervisedEvaluator

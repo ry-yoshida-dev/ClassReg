@@ -107,6 +107,20 @@ class TestMetricValues(unittest.TestCase):
         self.assertIsNone(metrics.roc_auc)
         self.assertEqual(ClassificationMetric.ACCURACY.read_from(metrics), 1.0)
 
+    def test_single_sample_undefined_metrics_are_none(self) -> None:
+        for y_pred in (0, 1):
+            with self.subTest(y_pred=y_pred):
+                metrics: MetricValues = MetricValues.compute(
+                    y_true=np.array([0]),
+                    y_pred=np.array([y_pred]),
+                    scores=probability_scores(np.array([0, 1]), [[0.1, 0.9]]),
+                )
+                self.assertIsNone(metrics.average_precision)
+                self.assertIsNone(metrics.matthews_correlation)
+                self.assertIsNone(metrics.cohen_kappa)
+                self.assertIsNone(metrics.roc_auc)
+                self.assertEqual(metrics.accuracy, float(y_pred == 0))
+
     def test_margin_scores_have_no_log_loss(self) -> None:
         y_true: LabelArray = np.array([0, 1])
         values: FloatArray = np.array([[1.0, -1.0], [-1.0, 1.0]])

@@ -19,10 +19,13 @@ Unit tests for the `classreg.classification` package: data validation, metrics c
 | [`test_feature_scaling.py`](test_feature_scaling.py) | `FeatureScaling` pipelines. |
 | [`test_all_processors.py`](test_all_processors.py) | Fit, predict, evaluate, and fitted state across all methods. |
 | [`test_scores.py`](test_scores.py) | Probabilities and margins. |
+| [`test_extended_methods.py`](test_extended_methods.py) | Naive Bayes variants, radius and centroid classifiers, Gaussian process, linear margin classifiers, and ensembles. |
 | [`test_baseline.py`](test_baseline.py) | `BaselineParameters` strategies. |
 | [`test_stratified_holdout_splitter.py`](test_stratified_holdout_splitter.py) | `StratifiedHoldoutSplitter` partitions. |
 | [`test_stratified_k_fold_splitter.py`](test_stratified_k_fold_splitter.py) | `StratifiedKFoldSplitter` partitions. |
 | [`test_stratified_group_k_fold_splitter.py`](test_stratified_group_k_fold_splitter.py) | `StratifiedGroupKFoldSplitter` partitions. |
+| [`test_repeated_stratified_k_fold_splitter.py`](test_repeated_stratified_k_fold_splitter.py) | `RepeatedStratifiedKFoldSplitter` partitions and evaluation. |
+| [`test_leave_one_out_splitter.py`](test_leave_one_out_splitter.py) | `LeaveOneOutSplitter` partitions and evaluation with undefined metrics. |
 | [`test_time_series_splitter.py`](test_time_series_splitter.py) | `TimeSeriesSplitter` partitions. |
 | [`test_evaluate.py`](test_evaluate.py) | `ClassificationEvaluator.evaluate`, reports, and absence of test-to-train leakage. |
 | [`test_compare.py`](test_compare.py) | `ClassificationEvaluator.compare` and comparison of folds. |

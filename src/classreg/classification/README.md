@@ -12,7 +12,7 @@ Classification on top of the shared foundation. `methods/` holds parameter class
 | [method.py](./method.py) | `ClassificationMethod` enum of available methods. |
 | [dataset.py](./dataset.py) | `ClassificationDataset`, the validated pair of features and labels. |
 | [class_weighting.py](./class_weighting.py) | `ClassWeighting` enum for imbalanced data. |
-| [tree_criterion.py](./tree_criterion.py) | `TreeCriterion` enum, shared by decision trees and random forests. |
+| [tree_criterion.py](./tree_criterion.py) | `TreeCriterion` enum, shared by decision trees and tree ensembles. |
 | [parameter.py](./parameter.py) | Abstract base class for classification parameters. |
 | [processor.py](./processor.py) | Abstract base class for processors; implements validation, fitted state, `predict`, and `evaluate`. |
 | [evaluator.py](./evaluator.py) | `ClassificationEvaluator`, with stratified folds and a class prior baseline by default. |

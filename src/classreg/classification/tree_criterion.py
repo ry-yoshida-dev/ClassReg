@@ -3,7 +3,7 @@ from enum import Enum
 
 class TreeCriterion(Enum):
     """
-    Split quality criterion, shared by decision trees and random forests.
+    Split quality criterion, shared by decision trees and tree ensembles.
 
     Attributes
     ----------

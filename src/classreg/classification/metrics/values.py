@@ -46,13 +46,15 @@ class MetricValues:
     weighted_f1 : float
         Support-weighted mean F1.
     matthews_correlation : float | None
-        Matthews correlation coefficient; None when only one class occurs.
+        Matthews correlation coefficient; None for a single sample or when only
+        one class occurs.
     cohen_kappa : float | None
-        Cohen's kappa; None when only one class occurs.
+        Cohen's kappa; None for a single sample or when only one class occurs.
     roc_auc : float | None
         Macro one-vs-rest ROC AUC over the classes where it is defined.
     average_precision : float | None
-        Macro one-vs-rest average precision over the classes where it is defined.
+        Macro one-vs-rest average precision over the classes where it is defined;
+        None for a single sample, where any score would yield a perfect value.
     log_loss : float | None
         Cross-entropy loss; None unless the scores are probabilities.
     per_class : tuple[PerClassMetrics, ...]
@@ -216,7 +218,7 @@ class MetricValues:
     def _compute_average_precision(
         is_positive: BoolArray, scores: FloatArray
     ) -> float | None:
-        if not np.any(is_positive):
+        if is_positive.size < 2 or not np.any(is_positive):
             return None
         return float(average_precision_score(is_positive, scores))
 
@@ -233,13 +235,13 @@ class MetricValues:
     def _compute_matthews_correlation(
         y_true: LabelArray, y_pred: LabelArray
     ) -> float | None:
-        if np.union1d(y_true, y_pred).size < 2:
+        if y_true.size < 2 or np.union1d(y_true, y_pred).size < 2:
             return None
         return float(matthews_corrcoef(y_true, y_pred))
 
     @staticmethod
     def _compute_cohen_kappa(y_true: LabelArray, y_pred: LabelArray) -> float | None:
-        if np.union1d(y_true, y_pred).size < 2:
+        if y_true.size < 2 or np.union1d(y_true, y_pred).size < 2:
             return None
         return float(cohen_kappa_score(y_true, y_pred))
 

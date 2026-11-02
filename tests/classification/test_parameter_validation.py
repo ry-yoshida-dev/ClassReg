@@ -1,21 +1,33 @@
 from __future__ import annotations
 
+import math
 import unittest
 from typing import cast
 
 import numpy as np
 
 from classreg.classification import (
+    AdaBoostParameters,
     BaselineParameters,
     DecisionTreeParameters,
+    ExtraTreesParameters,
     GaussianNaiveBayesParameters,
+    GradientBoostingParameters,
     HistGradientBoostingParameters,
     KNearestNeighborsAlgorithm,
     KNearestNeighborsMetric,
     KNearestNeighborsParameters,
+    LinearDiscriminantAnalysisParameters,
+    LinearDiscriminantAnalysisSolver,
+    LinearSVCLoss,
+    LinearSVCParameters,
+    LinearSVCPenalty,
     LogisticRegressionParameters,
     LogisticRegressionSolver,
+    MultilayerPerceptronParameters,
+    QuadraticDiscriminantAnalysisParameters,
     RandomForestParameters,
+    StochasticGradientDescentParameters,
     SVCParameters,
 )
 from classreg.parameter_validator import ParameterValidator
@@ -45,6 +57,79 @@ class TestParameterValidation(unittest.TestCase):
         _ = LogisticRegressionParameters(
             l1_ratio=0.5, solver=LogisticRegressionSolver.SAGA
         )
+
+    def test_extra_trees(self) -> None:
+        with self.assertRaises(ValueError):
+            _ = ExtraTreesParameters(n_estimators=0)
+        with self.assertRaises(ValueError):
+            _ = ExtraTreesParameters(min_samples_split=1)
+        with self.assertRaises(TypeError):
+            _ = ExtraTreesParameters(n_estimators=cast(int, 2.5))
+
+    def test_gradient_boosting(self) -> None:
+        with self.assertRaises(ValueError):
+            _ = GradientBoostingParameters(learning_rate=0.0)
+        with self.assertRaises(ValueError):
+            _ = GradientBoostingParameters(subsample=1.5)
+        with self.assertRaises(ValueError):
+            _ = GradientBoostingParameters(subsample=math.nan)
+        with self.assertRaises(ValueError):
+            _ = GradientBoostingParameters(n_iter_no_change=0)
+
+    def test_ada_boost(self) -> None:
+        with self.assertRaises(ValueError):
+            _ = AdaBoostParameters(n_estimators=0)
+        with self.assertRaises(ValueError):
+            _ = AdaBoostParameters(learning_rate=math.nan)
+        with self.assertRaises(ValueError):
+            _ = AdaBoostParameters(max_depth=0)
+
+    def test_linear_discriminant_analysis(self) -> None:
+        with self.assertRaises(ValueError):
+            _ = LinearDiscriminantAnalysisParameters(shrinkage=0.5)
+        with self.assertRaises(ValueError):
+            _ = LinearDiscriminantAnalysisParameters(
+                solver=LinearDiscriminantAnalysisSolver.LSQR, shrinkage=1.5
+            )
+        _ = LinearDiscriminantAnalysisParameters(
+            solver=LinearDiscriminantAnalysisSolver.EIGEN, shrinkage=0.5
+        )
+
+    def test_quadratic_discriminant_analysis(self) -> None:
+        with self.assertRaises(ValueError):
+            _ = QuadraticDiscriminantAnalysisParameters(reg_param=1.5)
+        with self.assertRaises(ValueError):
+            _ = QuadraticDiscriminantAnalysisParameters(reg_param=math.nan)
+
+    def test_multilayer_perceptron(self) -> None:
+        with self.assertRaises(ValueError):
+            _ = MultilayerPerceptronParameters(hidden_layer_sizes=())
+        with self.assertRaises(ValueError):
+            _ = MultilayerPerceptronParameters(hidden_layer_sizes=(4, 0))
+        with self.assertRaises(TypeError):
+            _ = MultilayerPerceptronParameters(hidden_layer_sizes=(cast(int, 2.5),))
+        with self.assertRaises(ValueError):
+            _ = MultilayerPerceptronParameters(learning_rate_init=0.0)
+
+    def test_stochastic_gradient_descent(self) -> None:
+        with self.assertRaises(ValueError):
+            _ = StochasticGradientDescentParameters(alpha=0.0)
+        with self.assertRaises(ValueError):
+            _ = StochasticGradientDescentParameters(l1_ratio=1.5)
+        with self.assertRaises(ValueError):
+            _ = StochasticGradientDescentParameters(max_iter=0)
+
+    def test_linear_svc(self) -> None:
+        with self.assertRaises(ValueError):
+            _ = LinearSVCParameters(C=0.0)
+        with self.assertRaises(ValueError):
+            _ = LinearSVCParameters(tol=0.0)
+        with self.assertRaises(ValueError):
+            _ = LinearSVCParameters(max_iter=0)
+        with self.assertRaises(ValueError):
+            _ = LinearSVCParameters(
+                penalty=LinearSVCPenalty.L1, loss=LinearSVCLoss.HINGE
+            )
 
     def test_svc(self) -> None:
         with self.assertRaises(ValueError):

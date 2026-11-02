@@ -10,4 +10,5 @@ Splitting strategies that preserve class proportions.
 |-----------|-------------|
 | [stratified_k_fold.py](./stratified_k_fold.py) | `StratifiedKFoldSplitter`, the classification default. |
 | [stratified_holdout.py](./stratified_holdout.py) | `StratifiedHoldoutSplitter`, a single partition. |
+| [repeated_stratified_k_fold.py](./repeated_stratified_k_fold.py) | `RepeatedStratifiedKFoldSplitter`, stratified k-fold repeated with new shuffles. |
 | [stratified_group_k_fold.py](./stratified_group_k_fold.py) | `StratifiedGroupKFoldSplitter`, which keeps each group on one side. |

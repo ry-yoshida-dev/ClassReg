@@ -6,21 +6,29 @@ import numpy as np
 from sklearn.exceptions import NotFittedError
 
 from classreg.classification import (
+    AdaBoostParameters,
     ClassificationMethod,
     ClassificationParameters,
     DecisionTreeParameters,
+    ExtraTreesParameters,
     GaussianNaiveBayesParameters,
+    GradientBoostingParameters,
     HistGradientBoostingParameters,
     KNearestNeighborsParameters,
+    LinearDiscriminantAnalysisParameters,
+    LinearSVCParameters,
     LogisticRegressionParameters,
     MarginClassificationProcessor,
     MetricValues,
+    MultilayerPerceptronParameters,
     ProbabilisticClassificationProcessor,
+    QuadraticDiscriminantAnalysisParameters,
     RandomForestParameters,
+    StochasticGradientDescentParameters,
     SVCParameters,
 )
 from classreg.classification.processor import ClassificationProcessor
-from classreg.classification.types import LabelArray
+from classreg.classification.types import LabelArray, NumericArray
 from tests.classification.helpers import (
     separable_blobs,
 )
@@ -33,6 +41,12 @@ ALL_PARAMETERS: tuple[ClassificationParameters, ...] = (
     RandomForestParameters(n_estimators=10),
     HistGradientBoostingParameters(max_iter=10, min_samples_leaf=2),
     GaussianNaiveBayesParameters(),
+    ExtraTreesParameters(n_estimators=10),
+    GradientBoostingParameters(n_estimators=10),
+    AdaBoostParameters(n_estimators=10, max_depth=2),
+    LinearDiscriminantAnalysisParameters(),
+    QuadraticDiscriminantAnalysisParameters(),
+    MultilayerPerceptronParameters(max_iter=2000),
 )
 
 
@@ -117,6 +131,41 @@ class TestAllProcessors(unittest.TestCase):
         )
         processor.fit(X, y)
         self.assertFalse(processor.classes.flags.writeable)
+
+    def test_one_vs_rest_linear_models_learn_linearly_separable_classes(self) -> None:
+        rng: np.random.Generator = np.random.default_rng(0)
+        centers: list[list[float]] = [[0.0, 0.0], [16.0, 0.0], [8.0, 16.0]]
+        X: NumericArray = np.vstack(
+            [rng.standard_normal((30, 2)) + center for center in centers]
+        )
+        y: LabelArray = np.repeat(np.arange(3), 30)
+        for parameters in (
+            LinearSVCParameters(),
+            StochasticGradientDescentParameters(),
+        ):
+            with self.subTest(parameters=type(parameters).__name__):
+                processor: MarginClassificationProcessor = parameters.build_processor()
+                with self.assertRaises(NotFittedError):
+                    _ = processor.predict(X)
+                processor.fit(X, y)
+                self.assertEqual(processor.evaluate(X, y).accuracy, 1.0)
+                self.assertEqual(
+                    processor.decision_function(X).values.shape, (y.size, 3)
+                )
+
+    def test_one_vs_rest_linear_models_produce_margins(self) -> None:
+        X, y = separable_blobs(num_classes=2)
+        for parameters in (
+            LinearSVCParameters(),
+            StochasticGradientDescentParameters(),
+        ):
+            with self.subTest(parameters=type(parameters).__name__):
+                processor: MarginClassificationProcessor = parameters.build_processor()
+                processor.fit(X, y)
+                self.assertEqual(
+                    processor.decision_function(X).values.shape, (y.size, 2)
+                )
+                self.assertIsNone(processor.evaluate(X, y).log_loss)
 
     def test_score_kind_matches_scores(self) -> None:
         X, y = separable_blobs(num_classes=2)

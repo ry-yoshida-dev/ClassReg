@@ -3,10 +3,9 @@ from enum import Enum
 
 class RandomForestMaxFeatures(Enum):
     """
-    Number of features considered per split in a random forest.
+    Number of features considered per split in a tree ensemble.
 
-    Use None in the RandomForestParameters classes, not this enum, to consider all
-    features.
+    Use None in the parameter classes, not this enum, to consider all features.
 
     Attributes
     ----------

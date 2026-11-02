@@ -7,20 +7,34 @@ from numpy.typing import NDArray
 from sklearn.exceptions import NotFittedError
 
 from classreg.regression import (
+    AdaBoostParameters,
     BaselineParameters,
     BaselineStrategy,
     DecisionTreeParameters,
     ElasticNetParameters,
+    ExtraTreesParameters,
+    GaussianProcessKernel,
+    GaussianProcessParameters,
+    GeneralizedLinearSolver,
+    GradientBoostingLoss,
+    GradientBoostingParameters,
     HistGradientBoostingParameters,
+    HuberParameters,
     KNearestNeighborsParameters,
     LassoParameters,
     LinearRegressionParameters,
+    LinearSVRParameters,
     MetricValues,
+    MultilayerPerceptronParameters,
+    MultilayerPerceptronSolver,
+    PoissonParameters,
+    QuantileParameters,
     RandomForestParameters,
     RegressionMethod,
     RegressionParameters,
     RegressionProcessor,
     RidgeParameters,
+    StochasticGradientDescentParameters,
     SVRParameters,
 )
 from tests.regression.helpers import linear_data
@@ -35,6 +49,17 @@ ALL_PARAMETERS: tuple[RegressionParameters, ...] = (
     DecisionTreeParameters(),
     RandomForestParameters(n_estimators=10),
     HistGradientBoostingParameters(min_samples_leaf=5),
+    ExtraTreesParameters(n_estimators=10),
+    GradientBoostingParameters(),
+    AdaBoostParameters(),
+    HuberParameters(),
+    LinearSVRParameters(max_iter=5000),
+    StochasticGradientDescentParameters(),
+    QuantileParameters(alpha=0.01),
+    GaussianProcessParameters(),
+    MultilayerPerceptronParameters(
+        solver=MultilayerPerceptronSolver.LBFGS, max_iter=2000
+    ),
 )
 
 
@@ -80,6 +105,68 @@ class TestAllProcessors(unittest.TestCase):
         ).build_processor()
         processor.fit(X, y)
         self.assertEqual(processor.predict(X).shape, y.shape)
+
+    def test_poisson_learns_counts(self) -> None:
+        X, _ = linear_data()
+        rates: NDArray[np.float64] = np.exp(0.5 * X[:, 0] + 1.0)
+        for solver in GeneralizedLinearSolver:
+            with self.subTest(solver=solver):
+                processor: RegressionProcessor = PoissonParameters(
+                    alpha=0.01, solver=solver
+                ).build_processor()
+                processor.fit(X, rates)
+                metrics: MetricValues = processor.evaluate(X, rates)
+                assert metrics.r2 is not None
+                self.assertGreater(metrics.r2, 0.95)
+
+    def test_poisson_rejects_negative_targets(self) -> None:
+        X, y = linear_data()
+        with self.assertRaises(ValueError):
+            PoissonParameters().build_processor().fit(X, y - y.max() - 1.0)
+
+    def test_quantile_predicts_requested_quantile(self) -> None:
+        X, y = linear_data(noise_scale=1.0)
+        processor: RegressionProcessor = QuantileParameters(
+            quantile=0.9, alpha=0.0
+        ).build_processor()
+        processor.fit(X, y)
+        self.assertAlmostEqual(
+            float(np.mean(y <= processor.predict(X))), 0.9, delta=0.03
+        )
+
+    def test_huber_resists_outliers(self) -> None:
+        X, y = linear_data()
+        corrupted: NDArray[np.float64] = y.copy()
+        corrupted[:5] += 100.0
+        processor: RegressionProcessor = HuberParameters().build_processor()
+        processor.fit(X, corrupted)
+        metrics: MetricValues = processor.evaluate(X, y)
+        assert metrics.r2 is not None
+        self.assertGreater(metrics.r2, 0.95)
+
+    def test_gaussian_process_kernels(self) -> None:
+        X, y = linear_data(num_samples=40, noise_scale=0.2)
+        for kernel in GaussianProcessKernel:
+            with self.subTest(kernel=kernel):
+                processor: RegressionProcessor = GaussianProcessParameters(
+                    kernel=kernel
+                ).build_processor()
+                processor.fit(X, y)
+                metrics: MetricValues = processor.evaluate(X, y)
+                assert metrics.r2 is not None
+                self.assertGreater(metrics.r2, 0.85)
+
+    def test_gradient_boosting_losses(self) -> None:
+        X, y = linear_data()
+        for loss in GradientBoostingLoss:
+            with self.subTest(loss=loss):
+                processor: RegressionProcessor = GradientBoostingParameters(
+                    loss=loss, alpha=0.5
+                ).build_processor()
+                processor.fit(X, y)
+                metrics: MetricValues = processor.evaluate(X, y)
+                assert metrics.r2 is not None
+                self.assertGreater(metrics.r2, 0.85)
 
     def test_method_is_reported(self) -> None:
         self.assertEqual(SVRParameters().build_processor().method, RegressionMethod.SVR)

@@ -86,3 +86,33 @@ class GroupKFold:
     def split(
         self, X: ArrayLike, y: ArrayLike, groups: ArrayLike
     ) -> Iterator[tuple[NDArray[np.intp], NDArray[np.intp]]]: ...
+
+class RepeatedKFold:
+    def __init__(
+        self,
+        *,
+        n_splits: int = 5,
+        n_repeats: int = 10,
+        random_state: int | None = None,
+    ) -> None: ...
+    def split(
+        self, X: ArrayLike
+    ) -> Iterator[tuple[NDArray[np.intp], NDArray[np.intp]]]: ...
+
+class RepeatedStratifiedKFold:
+    def __init__(
+        self,
+        *,
+        n_splits: int = 5,
+        n_repeats: int = 10,
+        random_state: int | None = None,
+    ) -> None: ...
+    def split(
+        self, X: ArrayLike, y: ArrayLike
+    ) -> Iterator[tuple[NDArray[np.intp], NDArray[np.intp]]]: ...
+
+class LeaveOneOut:
+    def __init__(self) -> None: ...
+    def split(
+        self, X: ArrayLike
+    ) -> Iterator[tuple[NDArray[np.intp], NDArray[np.intp]]]: ...

@@ -18,6 +18,9 @@ from .splitters import (
     GroupKFoldSplitter,
     HoldoutSplitter,
     KFoldSplitter,
+    LeaveOneOutSplitter,
+    RepeatedHoldoutSplitter,
+    RepeatedKFoldSplitter,
     TimeSeriesSplitter,
 )
 
@@ -37,7 +40,10 @@ __all__ = [
     "MetricSummary",
     "ModelComparison",
     "ModelEvaluation",
+    "LeaveOneOutSplitter",
     "RankedModel",
+    "RepeatedHoldoutSplitter",
+    "RepeatedKFoldSplitter",
     "SupervisedEvaluator",
     "TimeSeriesSplitter",
 ]

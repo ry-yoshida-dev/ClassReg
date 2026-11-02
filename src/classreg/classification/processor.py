@@ -59,6 +59,18 @@ class ClassificationProcessor(ABC):
 
     @property
     @abstractmethod
+    def underlying_estimator(self) -> object:
+        """
+        Get the wrapped estimator, for building ensembles from it.
+
+        Returns
+        -------
+        object
+            The underlying estimator.
+        """
+
+    @property
+    @abstractmethod
     def score_kind(self) -> ClassScoreKind:
         """
         Get the meaning of the per-class scores of this processor.

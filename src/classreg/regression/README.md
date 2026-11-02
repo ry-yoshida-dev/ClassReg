@@ -11,7 +11,7 @@ Regression on top of the shared foundation. `methods/` holds parameter classes t
 | [types.py](./types.py) | Type aliases for targets. |
 | [method.py](./method.py) | `RegressionMethod` enum of available methods. |
 | [dataset.py](./dataset.py) | `RegressionDataset`, the validated pair of features and targets. |
-| [tree_criterion.py](./tree_criterion.py) | `TreeCriterion` enum, shared by decision trees and random forests. |
+| [tree_criterion.py](./tree_criterion.py) | `TreeCriterion` enum, shared by decision trees and tree ensembles. |
 | [parameter.py](./parameter.py) | Abstract base class for regression parameters. |
 | [processor.py](./processor.py) | `RegressionProcessor`, with validation, fitted state, `predict`, and `evaluate`. |
 | [protocol.py](./protocol.py) | `RegressorLike`, the structural type of wrapped estimators. |

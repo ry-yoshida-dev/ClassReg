@@ -25,6 +25,19 @@ class ProbabilisticClassificationProcessor(ClassificationProcessor):
 
     @property
     @override
+    def underlying_estimator(self) -> object:
+        """
+        Get the wrapped estimator, for building ensembles from it.
+
+        Returns
+        -------
+        object
+            The underlying estimator.
+        """
+        return self.estimator
+
+    @property
+    @override
     def score_kind(self) -> ClassScoreKind:
         """
         Get the meaning of the per-class scores of this processor.
