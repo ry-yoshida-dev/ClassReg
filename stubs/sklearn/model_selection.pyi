@@ -116,3 +116,37 @@ class LeaveOneOut:
     def split(
         self, X: ArrayLike
     ) -> Iterator[tuple[NDArray[np.intp], NDArray[np.intp]]]: ...
+
+class LeaveOneGroupOut:
+    def __init__(self) -> None: ...
+    def split(
+        self, X: ArrayLike, y: ArrayLike, groups: ArrayLike
+    ) -> Iterator[tuple[NDArray[np.intp], NDArray[np.intp]]]: ...
+
+class LeavePGroupsOut:
+    def __init__(self, n_groups: int) -> None: ...
+    def split(
+        self, X: ArrayLike, y: ArrayLike, groups: ArrayLike
+    ) -> Iterator[tuple[NDArray[np.intp], NDArray[np.intp]]]: ...
+
+class LeavePOut:
+    def __init__(self, p: int) -> None: ...
+    def split(
+        self, X: ArrayLike
+    ) -> Iterator[tuple[NDArray[np.intp], NDArray[np.intp]]]: ...
+
+class PredefinedSplit:
+    def __init__(self, test_fold: ArrayLike) -> None: ...
+    def split(self) -> Iterator[tuple[NDArray[np.intp], NDArray[np.intp]]]: ...
+
+class GroupShuffleSplit:
+    def __init__(
+        self,
+        n_splits: int = 5,
+        *,
+        test_size: float | None = None,
+        random_state: int | None = None,
+    ) -> None: ...
+    def split(
+        self, X: ArrayLike, y: ArrayLike, groups: ArrayLike
+    ) -> Iterator[tuple[NDArray[np.intp], NDArray[np.intp]]]: ...

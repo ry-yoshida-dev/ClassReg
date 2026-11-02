@@ -40,14 +40,7 @@ class GroupKFoldSplitter(DatasetSplitter):
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "groups", np.asarray(self.groups))
-        is_discrete: bool = any(
-            np.issubdtype(self.groups.dtype, group_type)
-            for group_type in (np.integer, np.str_)
-        )
-        if not is_discrete:
-            raise TypeError(
-                f"groups must contain integer or string identifiers, got dtype {self.groups.dtype}"
-            )
+        ParameterValidator.require_group_identifiers(self.groups)
         ParameterValidator.require_integers(
             n_splits=self.n_splits,
             random_state=self.random_state,

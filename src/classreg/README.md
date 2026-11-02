@@ -10,7 +10,7 @@ Shared foundation for supervised learning. Layers depend only on those listed be
 |-----------|-------------|
 | [types.py](./types.py) | Type aliases shared by both tasks. |
 | [random_state.py](./random_state.py) | `DEFAULT_RANDOM_STATE`, the default seed of estimators and splitters. |
-| [parameter_validator.py](./parameter_validator.py) | `ParameterValidator`, runtime checks for NaN and non-integer parameters. |
+| [parameter_validator.py](./parameter_validator.py) | `ParameterValidator`, runtime checks for NaN and non-integer parameters and non-discrete group identifiers. |
 | [dataset.py](./dataset.py) | `SupervisedDataset`, the abstract validated pair of features and targets. |
 | [predictor.py](./predictor.py) | `PredictorLike`, the structural type of estimators that a pipeline wraps. |
 | [feature_scaling.py](./feature_scaling.py) | `FeatureScaling` enum that builds the scaler and estimator pipeline. |

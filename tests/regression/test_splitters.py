@@ -12,11 +12,16 @@ from classreg.regression import (
     GroupKFoldSplitter,
     HoldoutSplitter,
     KFoldSplitter,
+    LeaveOneGroupOutSplitter,
     LeaveOneOutSplitter,
+    LeavePGroupsOutSplitter,
+    LeavePOutSplitter,
     MetricValues,
     ModelComparison,
+    PredefinedSplitter,
     RegressionEvaluator,
     RegressionMetric,
+    RepeatedGroupHoldoutSplitter,
     RepeatedHoldoutSplitter,
     RepeatedKFoldSplitter,
     RidgeParameters,
@@ -177,6 +182,207 @@ class TestRepeatedHoldoutSplitter(unittest.TestCase):
             _ = RepeatedHoldoutSplitter(n_repeats=0)
         with self.assertRaises(TypeError):
             _ = RepeatedHoldoutSplitter(n_repeats=True)
+
+
+class TestLeaveOneGroupOutSplitter(unittest.TestCase):
+    def test_tests_on_each_group_once(self) -> None:
+        X, y = linear_data(num_samples=30)
+        groups: NDArray[np.int64] = np.arange(30) % 5
+        splits: tuple[DataSplit, ...] = LeaveOneGroupOutSplitter(groups=groups).split(
+            X, y
+        )
+        self.assertEqual(len(splits), 5)
+        for split in splits:
+            self.assertEqual(np.unique(groups[split.test_indices]).size, 1)
+            self.assertEqual(
+                np.intersect1d(
+                    groups[split.train_indices], groups[split.test_indices]
+                ).size,
+                0,
+            )
+        tested: NDArray[np.intp] = np.concatenate(
+            [split.test_indices for split in splits]
+        )
+        self.assertEqual(np.sort(tested).tolist(), list(range(30)))
+
+    def test_invalid_groups_raise(self) -> None:
+        X, y = linear_data(num_samples=4)
+        with self.assertRaises(TypeError):
+            _ = LeaveOneGroupOutSplitter(groups=np.array([0.5, 1.5]))
+        with self.assertRaises(ValueError):
+            _ = LeaveOneGroupOutSplitter(groups=np.array([0, 1])).split(X, y)
+        with self.assertRaises(ValueError):
+            _ = LeaveOneGroupOutSplitter(groups=np.zeros(4, dtype=np.int64)).split(X, y)
+
+    def test_evaluator_reports_every_group(self) -> None:
+        X, y = linear_data(num_samples=30)
+        report: EvaluationReport[MetricValues] = RegressionEvaluator(
+            splitter=LeaveOneGroupOutSplitter(groups=np.arange(30) % 5)
+        ).evaluate(RidgeParameters(), X, y)
+        self.assertEqual(len(report.model.folds), 5)
+
+
+class TestLeavePGroupsOutSplitter(unittest.TestCase):
+    def test_tests_on_every_combination(self) -> None:
+        X, y = linear_data(num_samples=30)
+        groups: NDArray[np.int64] = np.arange(30) % 5
+        splits: tuple[DataSplit, ...] = LeavePGroupsOutSplitter(
+            groups=groups, n_groups=2
+        ).split(X, y)
+        self.assertEqual(len(splits), math.comb(5, 2))
+        for split in splits:
+            self.assertEqual(np.unique(groups[split.test_indices]).size, 2)
+            self.assertEqual(
+                np.intersect1d(
+                    groups[split.train_indices], groups[split.test_indices]
+                ).size,
+                0,
+            )
+
+    def test_too_many_folds_raise_before_any_fold_is_built(self) -> None:
+        X: NDArray[np.float64] = np.zeros((20000, 1))
+        y: NDArray[np.float64] = np.zeros(20000)
+        splitter: LeavePGroupsOutSplitter = LeavePGroupsOutSplitter(
+            groups=np.arange(20000), n_groups=10000
+        )
+        with self.assertRaisesRegex(ValueError, "max_splits"):
+            _ = splitter.split(X, y)
+
+    def test_invalid_arguments_raise(self) -> None:
+        X, y = linear_data(num_samples=4)
+        groups: NDArray[np.int64] = np.array([0, 0, 1, 1])
+        with self.assertRaises(ValueError):
+            _ = LeavePGroupsOutSplitter(groups=groups, n_groups=0)
+        with self.assertRaises(ValueError):
+            _ = LeavePGroupsOutSplitter(groups=groups, max_splits=0)
+        with self.assertRaises(TypeError):
+            _ = LeavePGroupsOutSplitter(groups=groups, n_groups=True)
+        with self.assertRaises(ValueError):
+            _ = LeavePGroupsOutSplitter(groups=groups, n_groups=2).split(X, y)
+
+
+class TestLeavePOutSplitter(unittest.TestCase):
+    def test_tests_on_every_combination(self) -> None:
+        X, y = linear_data(num_samples=6)
+        splits: tuple[DataSplit, ...] = LeavePOutSplitter(p=2).split(X, y)
+        self.assertEqual(len(splits), math.comb(6, 2))
+        combinations: set[bytes] = set()
+        for split in splits:
+            self.assertEqual(split.test_indices.size, 2)
+            self.assertEqual(split.train_indices.size, 4)
+            combinations.add(split.test_indices.tobytes())
+        self.assertEqual(len(combinations), math.comb(6, 2))
+
+    def test_too_many_folds_raise_before_any_fold_is_built(self) -> None:
+        X: NDArray[np.float64] = np.zeros((20000, 1))
+        y: NDArray[np.float64] = np.zeros(20000)
+        with self.assertRaisesRegex(ValueError, "max_splits"):
+            _ = LeavePOutSplitter(p=10000).split(X, y)
+        self.assertEqual(
+            len(LeavePOutSplitter(p=1, max_splits=1000).split(X[:1000], y[:1000])), 1000
+        )
+
+    def test_invalid_arguments_raise(self) -> None:
+        X, y = linear_data(num_samples=4)
+        with self.assertRaises(ValueError):
+            _ = LeavePOutSplitter(p=0)
+        with self.assertRaises(ValueError):
+            _ = LeavePOutSplitter(max_splits=0)
+        with self.assertRaises(TypeError):
+            _ = LeavePOutSplitter(p=True)
+        with self.assertRaises(ValueError):
+            _ = LeavePOutSplitter(p=4).split(X, y)
+
+    def test_r2_is_defined_with_two_test_samples(self) -> None:
+        X, y = linear_data(num_samples=12)
+        report: EvaluationReport[MetricValues] = RegressionEvaluator(
+            splitter=LeavePOutSplitter(p=2)
+        ).evaluate(RidgeParameters(), X, y)
+        self.assertEqual(len(report.model.folds), math.comb(12, 2))
+        self.assertIsNotNone(report.model.folds[0].test_metrics.r2)
+
+
+class TestPredefinedSplitter(unittest.TestCase):
+    def test_uses_the_given_folds(self) -> None:
+        X, y = linear_data(num_samples=6)
+        splits: tuple[DataSplit, ...] = PredefinedSplitter(
+            test_folds=np.array([-1, -1, 0, 0, 1, 1])
+        ).split(X, y)
+        self.assertEqual(
+            [split.test_indices.tolist() for split in splits], [[2, 3], [4, 5]]
+        )
+        self.assertEqual(splits[0].train_indices.tolist(), [0, 1, 4, 5])
+
+    def test_single_validation_set(self) -> None:
+        X, y = linear_data(num_samples=4)
+        splits: tuple[DataSplit, ...] = PredefinedSplitter(
+            test_folds=np.array([-1, -1, -1, 0])
+        ).split(X, y)
+        self.assertEqual(len(splits), 1)
+        self.assertEqual(splits[0].test_indices.tolist(), [3])
+
+    def test_invalid_folds_raise(self) -> None:
+        X, y = linear_data(num_samples=3)
+        with self.assertRaises(TypeError):
+            _ = PredefinedSplitter(test_folds=np.array([0.5, -1.0]))
+        invalid: tuple[list[int], ...] = ([-2, 0], [-1, -1], [0, 0])
+        for folds in invalid:
+            with self.subTest(folds=folds):
+                with self.assertRaises(ValueError):
+                    _ = PredefinedSplitter(test_folds=np.array(folds))
+        with self.assertRaises(ValueError):
+            _ = PredefinedSplitter(test_folds=np.array([-1, 0])).split(X, y)
+
+
+class TestRepeatedGroupHoldoutSplitter(unittest.TestCase):
+    def test_groups_never_cross_partitions(self) -> None:
+        X, y = linear_data(num_samples=40)
+        groups: NDArray[np.int64] = np.arange(40) % 10
+        splits: tuple[DataSplit, ...] = RepeatedGroupHoldoutSplitter(
+            groups=groups, n_repeats=4, test_fraction=0.2
+        ).split(X, y)
+        self.assertEqual(len(splits), 4)
+        for split in splits:
+            self.assertEqual(np.unique(groups[split.test_indices]).size, 2)
+            self.assertEqual(
+                np.intersect1d(
+                    groups[split.train_indices], groups[split.test_indices]
+                ).size,
+                0,
+            )
+        self.assertFalse(np.array_equal(splits[0].test_indices, splits[1].test_indices))
+
+    def test_is_reproducible(self) -> None:
+        X, y = linear_data(num_samples=40)
+        splitter: RepeatedGroupHoldoutSplitter = RepeatedGroupHoldoutSplitter(
+            groups=np.arange(40) % 10
+        )
+        self.assertTrue(
+            np.array_equal(
+                splitter.split(X, y)[0].test_indices,
+                splitter.split(X, y)[0].test_indices,
+            )
+        )
+
+    def test_invalid_arguments_raise(self) -> None:
+        X, y = linear_data(num_samples=4)
+        groups: NDArray[np.int64] = np.array([0, 0, 1, 1])
+        for test_fraction in (0.0, 1.0, math.nan):
+            with self.subTest(test_fraction=test_fraction):
+                with self.assertRaises(ValueError):
+                    _ = RepeatedGroupHoldoutSplitter(
+                        groups=groups, test_fraction=test_fraction
+                    )
+        with self.assertRaises(ValueError):
+            _ = RepeatedGroupHoldoutSplitter(groups=groups, n_repeats=0)
+        with self.assertRaises(TypeError):
+            _ = RepeatedGroupHoldoutSplitter(groups=np.array([0.5, 1.5]))
+        with self.assertRaises(ValueError):
+            _ = RepeatedGroupHoldoutSplitter(groups=np.array([0, 1])).split(X, y)
+        with self.assertRaises(ValueError):
+            _ = RepeatedGroupHoldoutSplitter(groups=np.zeros(4, dtype=np.int64)).split(
+                X, y
+            )
 
 
 class TestLeaveOneOutSplitter(unittest.TestCase):

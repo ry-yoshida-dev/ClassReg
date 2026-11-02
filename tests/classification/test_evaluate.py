@@ -12,6 +12,7 @@ from classreg.classification import (
     EvaluationPartition,
     EvaluationReport,
     KNearestNeighborsParameters,
+    LeaveOneGroupOutSplitter,
     LogisticRegressionParameters,
     MetricSummary,
     MetricValues,
@@ -159,6 +160,13 @@ class TestEvaluate(unittest.TestCase):
             splitter=StratifiedGroupKFoldSplitter(groups=groups, n_splits=3)
         ).evaluate(LogisticRegressionParameters(), X, y)
         self.assertEqual(len(report.model.folds), 3)
+
+    def test_leave_one_group_out(self) -> None:
+        X, y = separable_blobs(num_samples_per_class=20)
+        report: EvaluationReport[MetricValues] = ClassificationEvaluator(
+            splitter=LeaveOneGroupOutSplitter(groups=np.arange(y.size) % 6)
+        ).evaluate(LogisticRegressionParameters(), X, y)
+        self.assertEqual(len(report.model.folds), 6)
 
     def test_time_series_with_class_first_seen_in_test_raises(self) -> None:
         X: NumericArray = np.arange(60.0).reshape(-1, 1)

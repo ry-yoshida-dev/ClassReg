@@ -3,6 +3,10 @@ from __future__ import annotations
 import math
 from numbers import Integral
 
+import numpy as np
+
+from .types import GroupArray
+
 
 class ParameterValidator:
     """
@@ -51,3 +55,27 @@ class ParameterValidator:
         for name, value in values.items():
             if math.isnan(value):
                 raise ValueError(f"{name} must not be NaN")
+
+    @staticmethod
+    def require_group_identifiers(groups: GroupArray) -> None:
+        """
+        Check that group identifiers are discrete.
+
+        Parameters
+        ----------
+        groups : GroupArray
+            The group identifier of each sample.
+
+        Raises
+        ------
+        TypeError
+            If groups does not contain integer or string identifiers.
+        """
+        is_discrete: bool = any(
+            np.issubdtype(groups.dtype, group_type)
+            for group_type in (np.integer, np.str_)
+        )
+        if not is_discrete:
+            raise TypeError(
+                f"groups must contain integer or string identifiers, got dtype {groups.dtype}"
+            )

@@ -9,8 +9,6 @@ class TreeCriterion(Enum):
     ----------
     SQUARED_ERROR
         Mean squared error.
-    FRIEDMAN_MSE
-        Mean squared error with Friedman's improvement score.
     ABSOLUTE_ERROR
         Mean absolute error.
     POISSON
@@ -18,6 +16,5 @@ class TreeCriterion(Enum):
     """
 
     SQUARED_ERROR = "squared_error"
-    FRIEDMAN_MSE = "friedman_mse"
     ABSOLUTE_ERROR = "absolute_error"
     POISSON = "poisson"

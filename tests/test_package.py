@@ -38,6 +38,8 @@ class TestPackageLayout(unittest.TestCase):
         )
 
     def test_shared_splitters_are_exported_at_the_top_level(self) -> None:
+        self.assertIs(regression.PredefinedSplitter, classreg.PredefinedSplitter)
+        self.assertIs(classification.LeavePOutSplitter, classreg.LeavePOutSplitter)
         self.assertIs(regression.RepeatedKFoldSplitter, classreg.RepeatedKFoldSplitter)
         self.assertIs(
             regression.RepeatedHoldoutSplitter, classreg.RepeatedHoldoutSplitter
