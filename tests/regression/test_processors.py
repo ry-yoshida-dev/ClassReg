@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import unittest
+import warnings
 
 import numpy as np
 from numpy.typing import NDArray
-from sklearn.exceptions import NotFittedError
+from sklearn.exceptions import ConvergenceWarning, NotFittedError
 
 from classreg.regression import (
     AdaBoostParameters,
@@ -151,7 +152,11 @@ class TestAllProcessors(unittest.TestCase):
                 processor: RegressionProcessor = GaussianProcessParameters(
                     kernel=kernel
                 ).build_processor()
-                processor.fit(X, y)
+                # On nearly linear data, a rational quadratic kernel legitimately
+                # approaches an RBF kernel, so its alpha can reach the upper bound.
+                with warnings.catch_warnings():
+                    warnings.simplefilter("ignore", ConvergenceWarning)
+                    processor.fit(X, y)
                 metrics: MetricValues = processor.evaluate(X, y)
                 assert metrics.r2 is not None
                 self.assertGreater(metrics.r2, 0.85)
