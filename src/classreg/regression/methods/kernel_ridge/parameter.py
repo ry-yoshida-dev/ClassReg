@@ -1,11 +1,11 @@
 from dataclasses import dataclass
 from typing import override
 
+from data_scaler import FeatureScaling
 from sklearn.compose import TransformedTargetRegressor
 from sklearn.kernel_ridge import KernelRidge
 from sklearn.preprocessing import StandardScaler
 
-from ....feature_scaling import FeatureScaling
 from ....options import SVMKernel
 from ....parameter_validator import ParameterValidator
 from ...method import RegressionMethod

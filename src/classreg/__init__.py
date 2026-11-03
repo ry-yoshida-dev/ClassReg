@@ -1,3 +1,5 @@
+from data_scaler import FeatureScaling
+
 from .dataset import SupervisedDataset
 from .evaluation import (
     DatasetSplitter,
@@ -23,7 +25,6 @@ from .evaluation import (
     SupervisedEvaluator,
     TimeSeriesSplitter,
 )
-from .feature_scaling import FeatureScaling
 from .options import (
     GaussianProcessKernel,
     KNearestNeighborsAlgorithm,

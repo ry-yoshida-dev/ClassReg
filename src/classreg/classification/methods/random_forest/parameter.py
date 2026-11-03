@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 from typing import override
 
+from data_scaler import FeatureScaling
 from sklearn.ensemble import RandomForestClassifier
 
-from ....feature_scaling import FeatureScaling
 from ....options import RandomForestMaxFeatures
 from ....parameter_validator import ParameterValidator
 from ....random_state import DEFAULT_RANDOM_STATE

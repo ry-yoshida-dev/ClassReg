@@ -23,7 +23,12 @@ from sklearn.linear_model import (
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.neural_network import MLPRegressor
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import MinMaxScaler, RobustScaler, StandardScaler
+from sklearn.preprocessing import (
+    FunctionTransformer,
+    MinMaxScaler,
+    RobustScaler,
+    StandardScaler,
+)
 from sklearn.svm import SVR, LinearSVR
 from sklearn.tree import DecisionTreeRegressor
 
@@ -384,9 +389,9 @@ class TestFeatureScaling(unittest.TestCase):
             FeatureScaling.ROBUST.build_pipeline(estimator).named_steps["scaler"],
             RobustScaler,
         )
-        self.assertEqual(
-            FeatureScaling.NONE.build_pipeline(estimator).steps[0],
-            ("scaler", "passthrough"),
+        self.assertIsInstance(
+            FeatureScaling.NONE.build_pipeline(estimator).named_steps["scaler"],
+            FunctionTransformer,
         )
 
 

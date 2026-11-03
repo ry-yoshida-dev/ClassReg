@@ -9,3 +9,6 @@ class MinMaxScaler:
 
 class RobustScaler:
     def __init__(self) -> None: ...
+
+class FunctionTransformer:
+    def __init__(self) -> None: ...

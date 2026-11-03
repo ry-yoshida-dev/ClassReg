@@ -16,8 +16,5 @@ Estimates generalization performance, independent of the task. `SupervisedEvalua
 | [fold.py](./fold.py) | `FoldEvaluation`, train and test metrics of one split. |
 | [metric_summary.py](./metric_summary.py) | `MetricSummary`, the aggregate of a metric over folds. |
 | [partition.py](./partition.py) | `EvaluationPartition` enum: train or test. |
-| [splitter.py](./splitter.py) | `DatasetSplitter`, the abstract splitting strategy. |
-| [data_split.py](./data_split.py) | `DataSplit`, the indices of one partition. |
 | [text_table.py](./text_table.py) | `TextTable`, plain text rendering of reports. |
 | [protocols/](./protocols/README.md) | Structural types that connect evaluation to the task packages. |
-| [splitters/](./splitters/README.md) | Task-independent splitting strategies. |

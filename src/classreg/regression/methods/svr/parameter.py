@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 from typing import override
 
+from data_scaler import FeatureScaling
 from sklearn.svm import SVR
 
-from ....feature_scaling import FeatureScaling
 from ....options import SVMGamma, SVMKernel
 from ....parameter_validator import ParameterValidator
 from ...method import RegressionMethod

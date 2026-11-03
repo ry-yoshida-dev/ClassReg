@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 from typing import override
 
+from data_scaler import FeatureScaling
 from sklearn.neural_network import MLPRegressor
 
-from ....feature_scaling import FeatureScaling
 from ....options import MultilayerPerceptronActivation, MultilayerPerceptronSolver
 from ....parameter_validator import ParameterValidator
 from ....random_state import DEFAULT_RANDOM_STATE

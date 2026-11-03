@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 from typing import override
 
+from data_scaler import FeatureScaling
 from sklearn.tree import ExtraTreeRegressor
 
-from ....feature_scaling import FeatureScaling
 from ....options import (
     RandomForestMaxFeatures,
 )

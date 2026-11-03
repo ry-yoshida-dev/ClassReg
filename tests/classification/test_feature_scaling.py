@@ -3,7 +3,12 @@ from __future__ import annotations
 import unittest
 
 from sklearn.naive_bayes import GaussianNB
-from sklearn.preprocessing import MinMaxScaler, RobustScaler, StandardScaler
+from sklearn.preprocessing import (
+    FunctionTransformer,
+    MinMaxScaler,
+    RobustScaler,
+    StandardScaler,
+)
 
 from classreg.classification import (
     FeatureScaling,
@@ -25,9 +30,9 @@ class TestFeatureScaling(unittest.TestCase):
             FeatureScaling.ROBUST.build_pipeline(estimator).named_steps["scaler"],
             RobustScaler,
         )
-        self.assertEqual(
-            FeatureScaling.NONE.build_pipeline(estimator).steps[0],
-            ("scaler", "passthrough"),
+        self.assertIsInstance(
+            FeatureScaling.NONE.build_pipeline(estimator).named_steps["scaler"],
+            FunctionTransformer,
         )
 
 

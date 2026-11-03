@@ -5,6 +5,8 @@ from dataclasses import dataclass, field
 from functools import reduce
 from typing import override
 
+from data_splitter import StratifiedKFoldSplitter
+
 from ..evaluation import (
     DatasetSplitter,
     EvaluableParametersLike,
@@ -23,7 +25,6 @@ from .metrics import (
     MetricValues,
 )
 from .processor import ClassificationProcessor
-from .splitters import StratifiedKFoldSplitter
 from .types import LabelArray, LabelScalar, NumericArray
 
 

@@ -18,6 +18,8 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
+    "data-scaler @ git+https://github.com/ry-yoshida-dev/DataScaler.git@8f17cfff6d93d7a28756e2d05eac4bd1996becfc",
+    "data-splitter @ git+https://github.com/ry-yoshida-dev/DataSplitter.git@eb453fb4f4e6d8d440ace155409ef055074228d5",
     "numpy>=2.0",
     "scikit-learn>=1.8",
 ]

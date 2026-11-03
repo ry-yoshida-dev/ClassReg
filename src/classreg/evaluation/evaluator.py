@@ -5,19 +5,18 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 
 import numpy as np
+from data_splitter import DatasetSplitter, DataSplit
 from numpy.typing import NDArray
 
 from ..dataset import SupervisedDataset
 from ..types import NumericArray
 from .comparison import ModelComparison
-from .data_split import DataSplit
 from .fold import FoldEvaluation
 from .metric_summary import MetricSummary
 from .model_evaluation import ModelEvaluation
 from .protocols import EvaluableParametersLike, EvaluableProcessorLike, MetricLike
 from .ranked_model import RankedModel
 from .report import EvaluationReport
-from .splitter import DatasetSplitter
 
 
 @dataclass(frozen=True)

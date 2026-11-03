@@ -19,4 +19,3 @@ Classification on top of the shared foundation. `methods/` holds parameter class
 | [processors/](./processors/README.md) | Concrete processors, split by the type of per-class scores. |
 | [methods/](./methods/README.md) | Per-method parameter classes and enums. |
 | [metrics/](./metrics/README.md) | Performance metrics computed from labels and scores. |
-| [splitters/](./splitters/README.md) | Stratified splitting strategies. |

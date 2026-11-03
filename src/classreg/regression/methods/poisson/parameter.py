@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 from typing import override
 
+from data_scaler import FeatureScaling
 from sklearn.linear_model import PoissonRegressor
 
-from ....feature_scaling import FeatureScaling
 from ....parameter_validator import ParameterValidator
 from ...generalized_linear_solver import GeneralizedLinearSolver
 from ...method import RegressionMethod

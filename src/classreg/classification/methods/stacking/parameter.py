@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 from typing import override
 
+from data_scaler import FeatureScaling
 from sklearn.ensemble import StackingClassifier
 
-from ....feature_scaling import FeatureScaling
 from ....parameter_validator import ParameterValidator
 from ...method import ClassificationMethod
 from ...metrics import ClassScoreKind

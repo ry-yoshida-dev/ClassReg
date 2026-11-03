@@ -1,3 +1,5 @@
+from data_scaler import FeatureScaling
+
 from ..evaluation import (
     DatasetSplitter,
     DataSplit,
@@ -21,7 +23,6 @@ from ..evaluation import (
     RepeatedKFoldSplitter,
     TimeSeriesSplitter,
 )
-from ..feature_scaling import FeatureScaling
 from .dataset import RegressionDataset
 from .evaluator import RegressionEvaluator
 from .method import RegressionMethod

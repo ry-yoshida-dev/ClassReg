@@ -11,6 +11,8 @@ ClassReg (`classreg`) is a Python package that wraps scikit-learn classifiers an
 
 Each task package exports everything needed for that task. Same-named classes such as `RandomForestParameters` are task-specific, so the top-level `classreg` package exports only the shared components.
 
+Scaling comes from [DataScaler](https://github.com/ry-yoshida-dev/DataScaler) and splitting from [DataSplitter](https://github.com/ry-yoshida-dev/DataSplitter); their main classes are re-exported here.
+
 For module-level design notes, see [src/classreg/README.md](src/classreg/README.md).
 
 ## Installation

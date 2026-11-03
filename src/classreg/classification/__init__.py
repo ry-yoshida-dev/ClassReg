@@ -1,3 +1,11 @@
+from data_scaler import FeatureScaling
+from data_splitter import (
+    RepeatedStratifiedKFoldSplitter,
+    StratifiedGroupKFoldSplitter,
+    StratifiedHoldoutSplitter,
+    StratifiedKFoldSplitter,
+)
+
 from ..evaluation import (
     DatasetSplitter,
     DataSplit,
@@ -16,7 +24,6 @@ from ..evaluation import (
     RepeatedGroupHoldoutSplitter,
     TimeSeriesSplitter,
 )
-from ..feature_scaling import FeatureScaling
 from .class_weighting import ClassWeighting
 from .dataset import ClassificationDataset
 from .evaluator import ClassificationEvaluator
@@ -83,12 +90,6 @@ from .processor import ClassificationProcessor
 from .processors import (
     MarginClassificationProcessor,
     ProbabilisticClassificationProcessor,
-)
-from .splitters import (
-    RepeatedStratifiedKFoldSplitter,
-    StratifiedGroupKFoldSplitter,
-    StratifiedHoldoutSplitter,
-    StratifiedKFoldSplitter,
 )
 from .tree_criterion import TreeCriterion
 

@@ -5,7 +5,6 @@ import numpy as np
 from numpy.typing import NDArray
 
 from classreg.classification import DatasetSplitter, DataSplit
-from classreg.classification.types import NumericArray
 
 
 @dataclass(frozen=True)
@@ -22,14 +21,16 @@ class FixedSplitter(DatasetSplitter):
     splits: tuple[DataSplit, ...]
 
     @override
-    def split(self, X: NumericArray, y: NDArray[np.generic]) -> tuple[DataSplit, ...]:
+    def split(
+        self, X: NDArray[np.generic], y: NDArray[np.generic]
+    ) -> tuple[DataSplit, ...]:
         """
         Return the predetermined splits.
 
         Parameters
         ----------
-        X : NumericArray
-            The feature matrix, which is ignored.
+        X : NDArray[np.generic]
+            The samples, which are ignored.
         y : NDArray[np.generic]
             The targets, which are ignored.
 

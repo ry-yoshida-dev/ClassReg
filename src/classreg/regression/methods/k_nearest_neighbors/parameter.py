@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 from typing import override
 
+from data_scaler import FeatureScaling
 from sklearn.neighbors import KNeighborsRegressor
 
-from ....feature_scaling import FeatureScaling
 from ....options import (
     KNearestNeighborsAlgorithm,
     KNearestNeighborsMetric,
