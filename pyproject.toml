@@ -61,3 +61,6 @@ extend-exclude = ["stubs"]
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "UP", "B"]
 ignore = ["E501"]
+
+[tool.uv]
+exclude-newer = "7 days"
