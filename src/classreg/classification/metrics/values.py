@@ -51,7 +51,8 @@ class MetricValues:
     cohen_kappa : float | None
         Cohen's kappa; None for a single sample or when only one class occurs.
     roc_auc : float | None
-        Macro one-vs-rest ROC AUC over the classes where it is defined.
+        Macro one-vs-rest ROC AUC over the classes where it is defined, also for
+        binary problems; the positive class's value is in ``per_class``.
     average_precision : float | None
         Macro one-vs-rest average precision over the classes where it is defined;
         None for a single sample, where any score would yield a perfect value.

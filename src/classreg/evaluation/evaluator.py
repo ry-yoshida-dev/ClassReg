@@ -27,6 +27,11 @@ class SupervisedEvaluator[TargetT: np.generic, MetricsT](ABC):
     Each fold builds a fresh processor from the parameters, so nothing carries
     over between folds and all preprocessing is fitted on training samples only.
 
+    Repeated splitters test overlapping partitions, so the standard deviation of
+    a summary is not that of independent runs. Leave-one-out test folds hold a
+    single sample, so metrics that need several samples or classes, such as
+    ``r2`` and ``roc_auc``, are undefined there.
+
     Attributes
     ----------
     splitter : DatasetSplitter

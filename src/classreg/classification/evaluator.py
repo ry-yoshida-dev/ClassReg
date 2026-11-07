@@ -36,6 +36,10 @@ class ClassificationEvaluator(SupervisedEvaluator[LabelScalar, MetricValues]):
     Evaluation raises ValueError if a split trains on fewer than two classes or
     tests on a class missing from its training samples.
 
+    With leave-one-out splits and balanced classes, the class prior baseline
+    scores close to zero, because leaving a sample out makes another class the
+    majority, so improvements over it are overstated.
+
     Attributes
     ----------
     splitter : DatasetSplitter
@@ -55,6 +59,8 @@ class ClassificationEvaluator(SupervisedEvaluator[LabelScalar, MetricValues]):
     ) -> ConfusionMatrix:
         """
         Sum the confusion matrices of all test partitions of an evaluation.
+
+        With repeated splitters, a sample is counted once per time it is tested.
 
         Parameters
         ----------

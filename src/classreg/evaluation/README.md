@@ -2,7 +2,7 @@
 
 ## Overview
 
-Estimates generalization performance, independent of the task. `SupervisedEvaluator` builds a fresh processor per fold from a parameter class, measures it on training and held-out samples, and evaluates a baseline on the same splits, so results are free of preprocessing leakage and directly comparable. Results are generic over the metrics type of the task. A metric that is undefined in some folds is summarized with its fold coverage and cannot be used for ranking, because its mean would not be comparable.
+Task-independent estimation of generalization performance. `SupervisedEvaluator` measures a model and a baseline on the same splits, and compares model configurations by one metric.
 
 ## Components
 
